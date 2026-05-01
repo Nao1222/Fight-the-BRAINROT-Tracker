@@ -501,7 +501,8 @@ function countUp(el, target) {
 }
 // ── RENDER ──
 function render() {
-  const list  = filtered(sorted());
+  const allSorted = sorted();
+  const list      = filtered(allSorted);
   const tbody = document.getElementById('tbody');
   const empty = document.getElementById('empty');
   document.getElementById('cnt').textContent = players.length;
@@ -522,14 +523,17 @@ function render() {
   }
   empty.classList.add('hidden');
   empty.style.display = 'none';
+  const rankMap = {};
+  allSorted.forEach((p, i) => rankMap[p.id] = i + 1);
+  
   const newRanks = {};
-  list.forEach((p,i) => newRanks[p.id] = i+1);
+  list.forEach(p => newRanks[p.id] = rankMap[p.id]);
   tbody.innerHTML = '';
   const cols = admin
     ? '72px 1fr 160px 140px 160px 130px'
     : '72px 1fr 160px 140px 160px';
   list.forEach((p, i) => {
-    const rank    = i + 1;
+    const rank    = rankMap[p.id];
     const rCls    = rank===1?'rank-gold':rank===2?'rank-silver':rank===3?'rank-bronze':'rank-other';
     const rLabel  = rank<=3 ? ['🥇','🥈','🥉'][rank-1] : String(rank).padStart(2,'0');
     const origIdx = players.indexOf(p);
